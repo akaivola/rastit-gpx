@@ -44,7 +44,7 @@ var parseFeatureVector = function(k) {
   return featureVector;
 }
 
-var parseFeature = function(d)a{
+var parseFeature = function(data) {
   var bs = data.split(';')[0].split(':')[1];
   var featureVector = parseFeatureVector(bs);
   var bo = featureVector.geometry.components;
@@ -71,17 +71,18 @@ var parseFeature = function(d)a{
 
   var feature = new ol.Feature({
     geometry: new ol.geom.LineString(
-                featureVector.geometry.components.map(coordinate => [coordinate.x, coordinate.y])) })
+                featureVector.geometry.components.map(function(coordinate) {
+                  return [coordinate.x, coordinate.y]}))})
   feature.getGeometry().transform(ol.proj.get('EPSG:3857'), 'EPSG:4326')
   return feature
 }
 
-var toGpx = feature => {
+var toGpx = function(feature) {
   return new ol.format.GPX().writeFeatures([feature])
 }
 
-var createElementAndDownload = number =>
-  data => {
+var createElementAndDownload = function(number) {
+  return function(data) {
     var link = document.createElement('a')
     link.setAttribute('href', 'data:application/gpx+xml;charset=utf-8,' + data)
     link.setAttribute('download', number + '.gpx')
@@ -92,10 +93,10 @@ var createElementAndDownload = number =>
       link.dispatchEvent(event)
     } else link.click()
   }
+}
 
-var fetchGpx = () => {
+var fetchGpx = function() {
   var number = document.getElementById('route-id').value
-  console.log(number)
   fetch("https://cors-anywhere.herokuapp.com/https://www.rastit.fi/ajax/download-routes.php?id=" + number)
     .then(response => response.text())
     .then(parseFeature)
